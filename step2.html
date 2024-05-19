@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hamming Code Simulation - Step 2</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Check for Errors</h1>
+        <div id="hammingInfo"></div>
+        <label for="receivedData">Received Data:</label>
+        <input type="text" id="receivedData" placeholder="Enter received data bits">
+        <br>
+        <button onclick="checkError()">Check for Error</button>
+        <pre id="output"></pre>
+    </div>
+    <script src="hamming.js"></script>
+</body>
+</html>

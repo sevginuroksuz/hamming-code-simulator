@@ -3,21 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hamming Code Simulation</title>
+    <title>Hamming Code Simulation - Step 1</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>Hamming Code Simulation</h1>
+        <h1>Enter Data to be Transmitted</h1>
         <label for="bitData">Data Bits:</label>
         <input type="text" id="bitData" placeholder="Enter data bits (e.g., 1011001)">
         <br>
-        <label for="errorPosition">Error Position:</label>
-        <input type="number" id="errorPosition" placeholder="Enter error position">
-        <br>
-        <button onclick="simulateError()">Simulate Error</button>
-        <br>
-        <pre id="output"></pre>
+        <button onclick="goToStep2()">Next</button>
     </div>
     <script src="hamming.js"></script>
 </body>

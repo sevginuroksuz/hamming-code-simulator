@@ -7,10 +7,12 @@ function calculateHammingCode(data) {
     let hammingCode = new Array(data.length + r);
     let j = 0;
     let k = 0;
+    let parityBitsPositions = [];
 
     for (let i = 1; i <= hammingCode.length; i++) {
         if (i === Math.pow(2, j)) {
             hammingCode[i - 1] = 0; // Parity bit placeholder
+            parityBitsPositions.push(i); // Save the position (1-based)
             j++;
         } else {
             hammingCode[i - 1] = parseInt(data.charAt(k));
@@ -28,7 +30,10 @@ function calculateHammingCode(data) {
         }
         hammingCode[parityPosition - 1] = parity;
     }
-    return hammingCode.join('');
+    return {
+        hammingCode: hammingCode.join(''),
+        parityBitsPositions: parityBitsPositions
+    };
 }
 
 // Hata simülasyonu
@@ -59,49 +64,40 @@ function calculateSyndrome(hammingCode) {
     return syndrome;
 }
 
-// Hamming kodunu çözen fonksiyon
-function decodeHammingCode(hammingCode) {
-    let r = 0;
-    while (Math.pow(2, r) < hammingCode.length + 1) {
-        r++;
+// Birinci sayfadan ikinci sayfaya yönlendirme ve veri aktarma
+function goToStep2() {
+    const data = document.getElementById('bitData').value;
+    if (data === null || data === "") {
+        alert("Invalid data input!");
+    } else {
+        const { hammingCode, parityBitsPositions } = calculateHammingCode(data);
+        localStorage.setItem('hammingCode', hammingCode);
+        localStorage.setItem('parityBitsPositions', JSON.stringify(parityBitsPositions));
+        localStorage.setItem('data', data);
+        window.location.href = 'step2.html';
     }
-    let decodedData = [];
-    let j = 0;
-    for (let i = 0; i < hammingCode.length; i++) {
-        if (i !== Math.pow(2, j) - 1) {
-            decodedData.push(hammingCode.charAt(i));
-        } else {
-            j++;
-        }
-    }
-    return decodedData.join('');
 }
 
-// Kullanıcı etkileşimi fonksiyonu
-function simulateError() {
-    let data = document.getElementById('bitData').value;
-    let errorPosition = parseInt(document.getElementById('errorPosition').value);
-
-    if (data === null || data === "") {
-        document.getElementById('output').innerText = "Invalid data input!";
-    } else {
-        let hammingCode = calculateHammingCode(data);
-        let output = "Data transferred is " + hammingCode + "\n";
-
-        if (isNaN(errorPosition) || errorPosition < 1 || errorPosition > hammingCode.length) {
-            output += "Invalid position!";
-        } else {
-            let corruptedCode = introduceError(hammingCode, errorPosition);
-            output += "Error Data is " + corruptedCode + "\n";
-
-            let syndrome = calculateSyndrome(corruptedCode);
-            if (syndrome === 0) {
-                output += "The position of error is not found (no error detected)";
-            } else {
-                output += "The position of error is " + syndrome;
-            }
-        }
-
-        document.getElementById('output').innerText = output;
+// İkinci sayfada Hamming kodunu ve parite bitlerini gösterme
+window.onload = function() {
+    if (window.location.pathname.includes('step2.html')) {
+        const hammingCode = localStorage.getItem('hammingCode');
+        const parityBitsPositions = JSON.parse(localStorage.getItem('parityBitsPositions'));
+        const data = localStorage.getItem('data');
+        document.getElementById('hammingInfo').innerText = 
+            `Data transferred is ${hammingCode}\nParity bits positions: ${parityBitsPositions.join(', ')}\nOriginal data: ${data}`;
     }
+}
+
+// Hata kontrolü ve sendrom hesaplama
+function checkError() {
+    const receivedData = document.getElementById('receivedData').value;
+    const syndrome = calculateSyndrome(receivedData);
+    let output = `Received Data: ${receivedData}\nSyndrome: ${syndrome}\n`;
+    if (syndrome === 0) {
+        output += "The position of error is not found (no error detected)";
+    } else {
+        output += `The position of error is ${syndrome}`;
+    }
+    document.getElementById('output').innerText = output;
 }
