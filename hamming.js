@@ -4,22 +4,26 @@ function calculateHammingCode(data) {
     while (Math.pow(2, r) < data.length + r + 1) {
         r++;
     }
-    let hammingCode = [];
+    let hammingCode = new Array(data.length + r);
     let j = 0;
-    for (let i = 0; i < data.length + r; i++) {
-        if (i === Math.pow(2, j) - 1) {
-            hammingCode.push(0);
+    let k = 0;
+
+    for (let i = 1; i <= hammingCode.length; i++) {
+        if (i === Math.pow(2, j)) {
+            hammingCode[i - 1] = 0; // Parity bit placeholder
             j++;
         } else {
-            hammingCode.push(parseInt(data.charAt(i - j)));
+            hammingCode[i - 1] = parseInt(data.charAt(k));
+            k++;
         }
     }
+
     for (let i = 0; i < r; i++) {
         let parity = 0;
         let parityPosition = Math.pow(2, i);
-        for (let k = parityPosition - 1; k < data.length + r; k += 2 * parityPosition) {
-            for (let m = 0; m < parityPosition && k + m < data.length + r; m++) {
-                parity ^= hammingCode[k + m];
+        for (let j = parityPosition - 1; j < hammingCode.length; j += 2 * parityPosition) {
+            for (let k = 0; k < parityPosition && j + k < hammingCode.length; k++) {
+                parity ^= hammingCode[j + k];
             }
         }
         hammingCode[parityPosition - 1] = parity;
@@ -45,9 +49,9 @@ function calculateSyndrome(hammingCode) {
     for (let i = 0; i < r; i++) {
         let parity = 0;
         let parityPosition = Math.pow(2, i);
-        for (let k = parityPosition - 1; k < hammingCode.length; k += 2 * parityPosition) {
-            for (let m = 0; m < parityPosition && k + m < hammingCode.length; m++) {
-                parity ^= parseInt(hammingCode.charAt(k + m));
+        for (let j = parityPosition - 1; j < hammingCode.length; j += 2 * parityPosition) {
+            for (let k = 0; k < parityPosition && j + k < hammingCode.length; k++) {
+                parity ^= parseInt(hammingCode.charAt(j + k));
             }
         }
         syndrome += parity * parityPosition;
@@ -65,7 +69,7 @@ function decodeHammingCode(hammingCode) {
     let j = 0;
     for (let i = 0; i < hammingCode.length; i++) {
         if (i !== Math.pow(2, j) - 1) {
-            decodedData.push(parseInt(hammingCode.charAt(i)));
+            decodedData.push(hammingCode.charAt(i));
         } else {
             j++;
         }
@@ -79,22 +83,22 @@ function simulateError() {
     let errorPosition = parseInt(document.getElementById('errorPosition').value);
 
     if (data === null || data === "") {
-        document.getElementById('output').innerText = "Geçersiz veri girdiniz!";
+        document.getElementById('output').innerText = "Invalid data input!";
     } else {
         let hammingCode = calculateHammingCode(data);
-        let output = "Hamming Kodu: " + hammingCode + "\n";
+        let output = "Data transferred is " + hammingCode + "\n";
 
         if (isNaN(errorPosition) || errorPosition < 1 || errorPosition > hammingCode.length) {
-            output += "Geçersiz pozisyon!";
+            output += "Invalid position!";
         } else {
             let corruptedCode = introduceError(hammingCode, errorPosition);
-            output += "Hata Simüle Edilmiş Kod: " + corruptedCode + "\n";
+            output += "Error Data is " + corruptedCode + "\n";
 
             let syndrome = calculateSyndrome(corruptedCode);
             if (syndrome === 0) {
-                output += "Sendrom: " + syndrome + " (Hata bulunamadı)";
+                output += "The position of error is not found (no error detected)";
             } else {
-                output += "Sendrom: " + syndrome + " (Hata pozisyonu: " + syndrome + ")";
+                output += "The position of error is " + syndrome;
             }
         }
 
