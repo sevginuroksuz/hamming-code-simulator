@@ -3,17 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hamming Code Simulation - Step 1</title>
+    <title>Hamming Code Calculator</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>Enter Data to be Transmitted</h1>
-        <label for="bitData">Data Bits:</label>
-        <input type="text" id="bitData" placeholder="Enter data bits (e.g., 1011001)">
-        <br>
-        <button onclick="goToStep2()">Next</button>
+        <h2>Hamming Code Calculator</h2>
+        <form>
+            <div class="form-group">
+                <label for="bitData">Enter binary data:</label>
+                <input type="text" id="bitData" name="bitData" minlength="2" maxlength="50" required>
+            </div>
+            <div class="form-group">
+                <label for="parityType">Select Parity Type:</label>
+                <select id="parityType" name="parityType">
+                    <option value="even">Even Parity</option>
+                    <option value="odd">Odd Parity</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="transferType">Select Transfer Type:</label>
+                <select id="transferType" name="transferType">
+                    <option value="send">Sender</option>
+                    <option value="receive">Receiver</option>
+                </select>
+            </div>
+        
+            <button type="button" onclick="calculate()">Calculate</button>
+            <button type="button" onclick="showSteps()">Steps</button>
+        </form>
+        
+        <pre id="output"></pre>
+        <pre id="stepsOutput"></pre>
     </div>
+    
     <script src="hamming.js"></script>
 </body>
 </html>
