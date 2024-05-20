@@ -2,41 +2,111 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hamming Code Calculator</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Hamming Code Simulator</title>
 </head>
 <body>
-    <div class="container">
-        <h2>Hamming Code Calculator</h2>
-        <form>
-            <div class="form-group">
-                <label for="bitData">Enter binary data:</label>
-                <input type="text" id="bitData" name="bitData" minlength="2" maxlength="50" required>
-            </div>
-            <div class="form-group">
-                <label for="parityType">Select Parity Type:</label>
-                <select id="parityType" name="parityType">
-                    <option value="even">Even Parity</option>
-                    <option value="odd">Odd Parity</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="transferType">Select Transfer Type:</label>
-                <select id="transferType" name="transferType">
-                    <option value="send">Sender</option>
-                    <option value="receive">Receiver</option>
-                </select>
-            </div>
-        
-            <button type="button" onclick="calculate()">Calculate</button>
-            <button type="button" onclick="showSteps()">Steps</button>
-        </form>
-        
-        <pre id="output"></pre>
-        <pre id="stepsOutput"></pre>
-    </div>
-    
-    <script src="hamming.js"></script>
+    <h1>Hamming Code Simulator</h1>
+    <label for="dataInput">Enter Data (4, 8, or 16 bits): </label>
+    <input type="text" id="dataInput" />
+    <button onclick="generateHammingCode()">Generate Hamming Code</button>
+    <p id="hammingCodeOutput"></p>
+
+    <label for="errorBit">Enter bit position to flip (1-based): </label>
+    <input type="number" id="errorBit" />
+    <button onclick="introduceError()">Introduce Error</button>
+    <p id="errorOutput"></p>
+
+    <button onclick="detectAndCorrectError()">Detect and Correct Error</button>
+    <p id="correctionOutput"></p>
+
+    <script>
+        let originalData = '';
+        let hammingCode = '';
+
+        function generateHammingCode() {
+            const data = document.getElementById('dataInput').value;
+            if (!/^[01]+$/.test(data) || (data.length !== 4 && data.length !== 8 && data.length !== 16)) {
+                document.getElementById('hammingCodeOutput').innerText = 'Invalid input. Please enter a 4, 8, or 16 bit binary number.';
+                return;
+            }
+            originalData = data;
+            hammingCode = calculateHammingCode(data);
+            document.getElementById('hammingCodeOutput').innerText = `Hamming Code: ${hammingCode}`;
+        }
+
+        function calculateHammingCode(data) {
+            const dataBits = data.split('').map(Number);
+            const m = dataBits.length;
+            const r = Math.ceil(Math.log2(m + Math.ceil(Math.log2(m)) + 1));
+            const totalBits = m + r;
+
+            let hamming = Array(totalBits).fill(0);
+            let j = 0;
+
+            for (let i = 1; i <= totalBits; i++) {
+                if (Math.log2(i) % 1 !== 0) {
+                    hamming[i - 1] = dataBits[j];
+                    j++;
+                }
+            }
+
+            for (let i = 0; i < r; i++) {
+                let parityBitPosition = Math.pow(2, i);
+                let parity = 0;
+
+                for (let j = parityBitPosition - 1; j < totalBits; j += 2 * parityBitPosition) {
+                    for (let k = j; k < j + parityBitPosition && k < totalBits; k++) {
+                        parity ^= hamming[k];
+                    }
+                }
+
+                hamming[parityBitPosition - 1] = parity;
+            }
+
+            return hamming.join('');
+        }
+
+        function introduceError() {
+            const errorBit = parseInt(document.getElementById('errorBit').value);
+            if (errorBit <= 0 || errorBit > hammingCode.length) {
+                document.getElementById('errorOutput').innerText = 'Invalid bit position';
+                return;
+            }
+
+            hammingCode = flipBit(hammingCode, errorBit - 1);
+            document.getElementById('errorOutput').innerText = `Hamming Code with Error: ${hammingCode}`;
+        }
+
+        function flipBit(code, position) {
+            let codeArray = code.split('');
+            codeArray[position] = codeArray[position] === '0' ? '1' : '0';
+            return codeArray.join('');
+        }
+
+        function detectAndCorrectError() {
+            let syndrome = 0;
+            for (let i = 0; i < Math.ceil(Math.log2(hammingCode.length)); i++) {
+                let parityBitPosition = Math.pow(2, i);
+                let parity = 0;
+
+                for (let j = parityBitPosition - 1; j < hammingCode.length; j += 2 * parityBitPosition) {
+                    for (let k = j; k < j + parityBitPosition && k < hammingCode.length; k++) {
+                        parity ^= parseInt(hammingCode[k]);
+                    }
+                }
+
+                if (parity !== 0) {
+                    syndrome += parityBitPosition;
+                }
+            }
+
+            if (syndrome > 0) {
+                hammingCode = flipBit(hammingCode, syndrome - 1);
+                document.getElementById('correctionOutput').innerText = `Error detected and corrected at bit position ${syndrome}. Corrected Hamming Code: ${hammingCode}`;
+            } else {
+                document.getElementById('correctionOutput').innerText = 'No error detected.';
+            }
+        }
+    </script>
 </body>
 </html>
