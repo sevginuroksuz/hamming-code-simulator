@@ -3,21 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <title>Hamming Code Simulator</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Hamming Code Simulator</h1>
-    <label for="dataInput">Enter Data (4, 8, or 16 bits): </label>
-    <input type="text" id="dataInput" />
-    <button onclick="generateHammingCode()">Generate Hamming Code</button>
-    <p id="hammingCodeOutput"></p>
+    <div class="container">
+        <h1>Hamming Code Simulator</h1>
+        <div class="form-group">
+            <label for="dataInput">Enter Data (4, 8, or 16 bits): </label>
+            <input type="text" id="dataInput" />
+        </div>
+        <button onclick="generateHammingCode()">Generate Hamming Code</button>
+        <p id="hammingCodeOutput"></p>
 
-    <label for="errorBit">Enter bit position to flip (1-based): </label>
-    <input type="number" id="errorBit" />
-    <button onclick="introduceError()">Introduce Error</button>
-    <p id="errorOutput"></p>
+        <div class="form-group">
+            <label for="errorBit">Enter bit position to flip (1-based): </label>
+            <input type="number" id="errorBit" />
+        </div>
+        <button onclick="introduceError()">Introduce Error</button>
+        <p id="errorOutput"></p>
 
-    <button onclick="detectAndCorrectError()">Detect and Correct Error</button>
-    <p id="correctionOutput"></p>
+        <button id="detectCorrectError" onclick="detectAndCorrectError()">Detect and Correct Error</button>
+        <p id="correctionOutput"></p>
+    </div>
 
     <script>
         let originalData = '';
