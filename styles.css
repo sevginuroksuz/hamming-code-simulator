@@ -62,7 +62,7 @@ button {
 button#detectCorrectError {
     margin: 20px auto 0;
     display: block;
-    width: 200px; /* Butonun genişliğini artırabilirsiniz */
+    width: 200px;
     text-align: center;
 }
 
