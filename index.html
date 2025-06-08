@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hamming SEC-DED Simulator</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Hamming SEC-DED Code Simulator</h1>
+
+    <div class="input-group">
+      <label>Select Data Length:</label>
+      <label><input type="radio" name="len" value="8"> 8 bits</label>
+      <label><input type="radio" name="len" value="16" checked> 16 bits</label>
+      <label><input type="radio" name="len" value="32"> 32 bits</label>
+    </div>
+
+    <div class="input-group">
+      <label for="dataInput">Enter Binary Data (e.g. 10110011):</label>
+      <input id="dataInput" type="text" maxlength="32" placeholder="…"/>
+    </div>
+    <button id="genBtn">Generate Hamming Code</button>
+
+    <div id="hammingCodeOutput" class="output"></div>
+
+    <div class="input-group">
+      <label for="errorPos">Flip bit at position (1=rightmost):</label>
+      <input id="errorPos" type="number" min="1"/>
+    </div>
+    <button id="injectBtn">Inject Error and Correct</button>
+
+    <div id="resultOutput" class="output"></div>
+
+    <!-- burada tablo gösterilecek -->
+    <div id="bitVisualization"></div>
+
+    <!-- Projenin çalışma adımları (alt kısımda) -->
+    <section class="description">
+      <h2>How It Works</h2>
+      <ol>
+        <li><strong>Select Data Length:</strong> Choose 8, 16 or 32 bits to define the input size.</li>
+        <li><strong>Enter Binary Data:</strong> Provide your binary message (e.g. 10110011). The length must match your selection.</li>
+        <li><strong>Generate Hamming Code:</strong> Computes SEC-DED parity bits and displays the encoded code.</li>
+        <li><strong>Flip Bit:</strong> Specify a position (1=rightmost) to introduce a single-bit error.</li>
+        <li><strong>Inject & Correct:</strong> Applies the error, recalculates syndrome, identifies faulty bit, and corrects it.</li>
+        <li><strong>Visualize Bits:</strong> Renders a two-row grid showing bit numbers and values. The error bit is highlighted in red and the corrected position in green.</li>
+      </ol>
+    </section>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
